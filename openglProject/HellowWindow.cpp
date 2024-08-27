@@ -236,7 +236,9 @@ int main()
         glBindTexture(GL_TEXTURE_2D, specularMap);
 
         myShader.setFloat("material.shininess", 32);
-        myShader.setVec3("light.position", lightPos);
+        myShader.setVec3("light.position", camera.Position);
+        myShader.setVec3("light.direction", camera.Front);
+        myShader.setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
         myShader.setVec3("light.ambient", 1.0f, 1.0f, 1.0f);
         myShader.setVec3("light.diffuse", 1.0f, 1.0f, 1.0f);
         myShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);

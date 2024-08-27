@@ -7,6 +7,7 @@ struct Material{
 struct Light {
     vec3 position;
     vec3 direction;
+    float cutOff;
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
@@ -33,14 +34,21 @@ void main()
     float attenuation=1.0/(light.constant+light.linear*distance+
                            light.quadratic*distance*distance);
     vec3 lightDir=normalize(light.position-worldPos);
-    vec3 diffuse=vec3(texture(material.diffuse,Texcoords))*light.diffuse*max(0,dot(lightDir,normal));
+    float theta=dot(lightDir,normalize(-light.direction));
+    vec3 result;
+    if(theta>light.cutOff){
+        vec3 diffuse=vec3(texture(material.diffuse,Texcoords))*light.diffuse*max(0,dot(lightDir,normal));
     
-    vec3 viewDir=normalize(viewPos-worldPos);
-    vec3 halfDir=normalize(viewDir+lightDir);
-    vec3 specular=vec3(texture(material.specular,Texcoords))*light.specular*pow(max(0,dot(halfDir,normal)),material.shininess);
+        vec3 viewDir=normalize(viewPos-worldPos);
+        vec3 halfDir=normalize(viewDir+lightDir);
+        vec3 specular=vec3(texture(material.specular,Texcoords))*light.specular*pow(max(0,dot(halfDir,normal)),material.shininess);
 
-    vec3 ambient=vec3(texture(material.diffuse,Texcoords))*light.ambient;
-    vec3 result=ambient+diffuse+specular;
+        vec3 ambient=vec3(texture(material.diffuse,Texcoords))*light.ambient;
+        result=ambient+diffuse+specular;
+    }else{
+        result=light.ambient*vec3(texture(material.diffuse,Texcoords));
+    }
+    
 
     FragColor = vec4(result*attenuation,1.0);
 }
