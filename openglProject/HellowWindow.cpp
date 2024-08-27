@@ -145,8 +145,6 @@ int main()
         1,2,3
     };
 
-    sdk;
-
     unsigned int VBO, VAO;
     glGenBuffers(1, &VBO);
     glGenVertexArrays(1, &VAO);
