@@ -206,6 +206,14 @@ int main()
     glm::vec3(1.5f,  0.2f, -1.5f),
     glm::vec3(-1.3f,  1.0f, -1.5f)
     };
+
+    glm::vec3 pointLightPositions[] = {
+    glm::vec3(0.7f,  0.2f,  2.0f),
+    glm::vec3(2.3f, -3.3f, -4.0f),
+    glm::vec3(-4.0f,  2.0f, -12.0f),
+    glm::vec3(0.0f,  0.0f, -3.0f)
+    };
+
     while (!glfwWindowShouldClose(window))
     {
         // ‰»Î
@@ -227,7 +235,54 @@ int main()
         glm::mat4 project = glm::mat4(1.0f);
         project = glm::perspective(glm::radians(camera.Zoom), screenWidth/screenHeight, 0.1f, 100.0f);
         
-        
+        // directional light
+        myShader.setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
+        myShader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+        myShader.setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
+        myShader.setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
+        // point light 1
+        myShader.setVec3("pointLights[0].position", pointLightPositions[0]);
+        myShader.setVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
+        myShader.setVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
+        myShader.setVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
+        myShader.setFloat("pointLights[0].constant", 1.0f);
+        myShader.setFloat("pointLights[0].linear", 0.09f);
+        myShader.setFloat("pointLights[0].quadratic", 0.032f);
+        // point light 2
+        myShader.setVec3("pointLights[1].position", pointLightPositions[1]);
+        myShader.setVec3("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
+        myShader.setVec3("pointLights[1].diffuse", 0.8f, 0.8f, 0.8f);
+        myShader.setVec3("pointLights[1].specular", 1.0f, 1.0f, 1.0f);
+        myShader.setFloat("pointLights[1].constant", 1.0f);
+        myShader.setFloat("pointLights[1].linear", 0.09f);
+        myShader.setFloat("pointLights[1].quadratic", 0.032f);
+        // point light 3
+        myShader.setVec3("pointLights[2].position", pointLightPositions[2]);
+        myShader.setVec3("pointLights[2].ambient", 0.05f, 0.05f, 0.05f);
+        myShader.setVec3("pointLights[2].diffuse", 0.8f, 0.8f, 0.8f);
+        myShader.setVec3("pointLights[2].specular", 1.0f, 1.0f, 1.0f);
+        myShader.setFloat("pointLights[2].constant", 1.0f);
+        myShader.setFloat("pointLights[2].linear", 0.09f);
+        myShader.setFloat("pointLights[2].quadratic", 0.032f);
+        // point light 4
+        myShader.setVec3("pointLights[3].position", pointLightPositions[3]);
+        myShader.setVec3("pointLights[3].ambient", 0.05f, 0.05f, 0.05f);
+        myShader.setVec3("pointLights[3].diffuse", 0.8f, 0.8f, 0.8f);
+        myShader.setVec3("pointLights[3].specular", 1.0f, 1.0f, 1.0f);
+        myShader.setFloat("pointLights[3].constant", 1.0f);
+        myShader.setFloat("pointLights[3].linear", 0.09f);
+        myShader.setFloat("pointLights[3].quadratic", 0.032f);
+        // spotLight
+        myShader.setVec3("spotLight.position", camera.Position);
+        myShader.setVec3("spotLight.direction", camera.Front);
+        myShader.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
+        myShader.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+        myShader.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
+        myShader.setFloat("spotLight.constant", 1.0f);
+        myShader.setFloat("spotLight.linear", 0.09f);
+        myShader.setFloat("spotLight.quadratic", 0.032f);
+        myShader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+        myShader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(17.5f)));
 
         myShader.use();
         glActiveTexture(GL_TEXTURE0);
@@ -236,18 +291,11 @@ int main()
         glBindTexture(GL_TEXTURE_2D, specularMap);
 
         myShader.setFloat("material.shininess", 32);
-        myShader.setVec3("light.position", lightPos);
-        myShader.setVec3("light.ambient", 1.0f, 1.0f, 1.0f);
-        myShader.setVec3("light.diffuse", 1.0f, 1.0f, 1.0f);
-        myShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
-        myShader.setFloat("light.constant", 1.0f);
-        myShader.setFloat("light.linear", 0.09f);
-        myShader.setFloat("light.quadratic", 0.032f);
         myShader.setVec3("viewPos", camera.Position);
-        //myShader.setMatirx4f("model", model);
         myShader.setMatirx4f("view", view);
         myShader.setMatirx4f("project", project);
         
+
 
         glBindVertexArray(VAO);
         for (unsigned int i = 0; i < 10; i++)
