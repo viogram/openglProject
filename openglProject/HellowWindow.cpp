@@ -71,12 +71,14 @@ int main()
     // configure global opengl state
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_STENCIL_TEST);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
     glDepthFunc(GL_LESS); // always pass the depth test (same effect as glDisable(GL_DEPTH_TEST))
 
     // build and compile shaders
     // -------------------------
     Shader shader("..\\shader\\vertex.txt", "..\\shader\\fragment.txt");
-
+    Shader singleColorShader("..\\shader\\vertex.txt", "..\\shader\\singleFragment.txt");
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     float cubeVertices[] = {
@@ -167,7 +169,7 @@ int main()
     // --------------------
     shader.use();
     shader.setInt("texture1", 0);
-
+    
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -185,15 +187,31 @@ int main()
         // render
         // ------
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-        shader.use();
+        
         glm::mat4 model = glm::mat4(1.0f);
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        
+        singleColorShader.use();
+        singleColorShader.setMatirx4f("view", view);
+        singleColorShader.setMatirx4f("projection", projection);
+
+        shader.use();
         shader.setMatirx4f("view", view);
         shader.setMatirx4f("projection", projection);
+        
+        // floor
+        glStencilMask(0x00); //关闭写入模板缓冲
+        glStencilFunc(GL_ALWAYS, 1, 0xFF);
+        glBindVertexArray(planeVAO);
+        glBindTexture(GL_TEXTURE_2D, floorTexture);
+        shader.setMatirx4f("model", glm::mat4(1.0f));
+        glDrawArrays(GL_TRIANGLES, 0, 6);
         // cubes
+        glStencilMask(0xFF);
+        glStencilFunc(GL_ALWAYS, 1, 0xFF);
         glBindVertexArray(cubeVAO);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, cubeTexture);
@@ -204,11 +222,26 @@ int main()
         model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
         shader.setMatirx4f("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
-        // floor
-        glBindVertexArray(planeVAO);
-        glBindTexture(GL_TEXTURE_2D, floorTexture);
-        shader.setMatirx4f("model", glm::mat4(1.0f));
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        glStencilMask(0x00);
+        glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+        glDisable(GL_DEPTH_TEST);  //关闭深度测试，避免边框被地板覆盖
+        singleColorShader.use();
+        float scale = 1.1f;
+        glBindVertexArray(cubeVAO);
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
+        model = glm::scale(model, glm::vec3(scale));
+        singleColorShader.setMatirx4f("model", model);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(scale));
+        singleColorShader.setMatirx4f("model", model);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        glStencilMask(0xFF);  //重新打开模板缓冲写入
+        glEnable(GL_DEPTH_TEST);
         glBindVertexArray(0);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
