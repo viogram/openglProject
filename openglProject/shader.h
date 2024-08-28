@@ -2,7 +2,7 @@
 #ifndef SHADER_H
 #define SHADER_H
 
-#include <glad/glad.h>; // 包含glad来获取所有的必须OpenGL头文件
+#include <glad/glad.h> // 包含glad来获取所有的必须OpenGL头文件
 
 #include <string>
 #include <fstream>
@@ -115,7 +115,7 @@ public:
         glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
     }
 
-    void setMatirx3f(const std::string& name, glm::mat4 matrix) const {
+    void setMatirx3f(const std::string& name, glm::mat3 matrix) const {
         glUniformMatrix3fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(matrix));
     }
 

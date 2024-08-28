@@ -2,7 +2,7 @@
 #ifndef MESH_H
 #define MESH_H
 
-#include <glad/glad.h>; // 包含glad来获取所有的必须OpenGL头文件
+#include <glad/glad.h> // 包含glad来获取所有的必须OpenGL头文件
 
 #include <string>
 #include <iostream>
@@ -23,6 +23,7 @@ struct Vertex {
 struct Texture {
 	unsigned int id;
 	string type;
+	aiString path;
 };
 
 class Mesh {
