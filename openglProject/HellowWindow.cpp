@@ -183,11 +183,6 @@ int main()
     unsigned int cubeTexture = loadTexture("container.jpg");
     unsigned int floorTexture = loadTexture("awesomeface.jpg");
 
-    // shader configuration
-    // --------------------
-    shader.use();
-    shader.setInt("texture1", 0);
-
     //创建帧缓冲对象
     unsigned int FBO;
     glGenFramebuffers(1, &FBO);
@@ -196,7 +191,7 @@ int main()
     unsigned int texture;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
-    glTexImage2D(GL_TEXTURE, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     //glGenerateMipmap(GL_TEXTURE_2D);
