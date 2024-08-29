@@ -11,8 +11,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-const float screenWidth = 800;
-const float screenHeight = 600;
+const float screenWidth = 1600;
+const float screenHeight = 1200;
 
 Camera camera(glm::vec3(0, 0, 3.0f));
 float deltaTime = 0.0f;	// 当前帧与上一帧的时间差
@@ -84,7 +84,7 @@ int main()
         return -1;
     }
 
-    glViewport(0, 0, 800, 600);
+    glViewport(0, 0, screenWidth, screenHeight);
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
@@ -95,10 +95,8 @@ int main()
     //打开深度缓冲
     glEnable(GL_DEPTH_TEST);
 
-    Shader myShader("..\\shader\\vertex.txt", "..\\shader\\fragment.txt");
-
+    Shader myShader("..\\shader\\vertex.txt", "..\\shader\\fragment.txt", "..\\shader\\geometry.txt");
     Model myModel("..\\model\\nanosuit\\nanosuit.obj");
-    
 
     while (!glfwWindowShouldClose(window))
     {
@@ -135,6 +133,7 @@ int main()
         myShader.setMatirx4f("view", view);
         myShader.setMatirx4f("project", project);
         myShader.setMatirx3f("toWorldNormal", glm::mat3(glm::transpose(glm::inverse(model))));
+        myShader.setFloat("time", glfwGetTime());
         myModel.Draw(myShader);
 
         //检查并调用事件，交换缓冲
