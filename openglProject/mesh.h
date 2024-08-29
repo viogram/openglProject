@@ -31,24 +31,15 @@ public:
 	vector<Vertex> vertices;
 	vector<unsigned int> indices;
 	vector<Texture> textures;
-	Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures) :vertices(vertices), indices(indices), textures(textures) {
+	unsigned int cubemap;
+	Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures, unsigned int cubemap) :vertices(vertices), indices(indices), textures(textures), cubemap(cubemap) {
 		setupMesh();
 	}
 	void Draw(Shader shader) {
-		unsigned int diffuseNr = 1;
-		unsigned int specularNr = 1;
-		string post;
-		for (int i = 0; i < textures.size(); i++) {
-			glActiveTexture(GL_TEXTURE0 + i);
-			if (textures[i].type == "diffuse") {
-				post = "diffuse" + to_string(diffuseNr++);
-			}
-			else if (textures[i].type == "specular") {
-				post = "specular" + to_string(specularNr++);
-			}
-			shader.setInt("material." + post, i);
-			glBindTexture(GL_TEXTURE_2D, textures[i].id);
-		}
+		glActiveTexture(GL_TEXTURE0);
+		shader.setInt("skybox", 0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
+
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
@@ -79,6 +70,7 @@ private:
 
 		glBindVertexArray(0);
 	}
+
 };
 
 #endif

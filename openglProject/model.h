@@ -17,8 +17,9 @@ class Model
 {
 public:
     /*  º¯Êý   */
-    Model(string path)
+    Model(string path, unsigned int cubemap)
     {
+        this->cubemap = cubemap;
         loadModel(path);
     }
     void Draw(Shader shader) {
@@ -31,6 +32,7 @@ private:
     vector<Mesh> meshes;
     string directory;
     vector<Texture> textures_loaded;
+    unsigned int cubemap;
     /*  º¯Êý   */
     void loadModel(string path) {
         Assimp::Importer import;
@@ -92,7 +94,7 @@ private:
             textures.insert(textures.end(), specular.begin(), specular.end());
         }
 
-        return Mesh(vertices, indices, textures);
+        return Mesh(vertices, indices, textures, cubemap);
     }
     vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName) {
         vector<Texture> textures;
