@@ -95,7 +95,8 @@ int main()
     //打开深度缓冲
     glEnable(GL_DEPTH_TEST);
 
-    Shader myShader("..\\shader\\vertex.txt", "..\\shader\\fragment.txt", "..\\shader\\geometry.txt");
+    Shader myShader("..\\shader\\vertex.txt", "..\\shader\\fragment.txt");
+    Shader normalDisplayShader("..\\shader\\normalDisplayVertex.txt", "..\\shader\\normalDisplayFragment.txt", "..\\shader\\normalDisplayGeometry.txt");
     Model myModel("..\\model\\nanosuit\\nanosuit.obj");
 
     while (!glfwWindowShouldClose(window))
@@ -133,14 +134,20 @@ int main()
         myShader.setMatirx4f("view", view);
         myShader.setMatirx4f("project", project);
         myShader.setMatirx3f("toWorldNormal", glm::mat3(glm::transpose(glm::inverse(model))));
-        myShader.setFloat("time", glfwGetTime());
         myModel.Draw(myShader);
+
+        normalDisplayShader.use();
+        normalDisplayShader.setMatirx4f("model", model);
+        normalDisplayShader.setMatirx4f("view", view);
+        normalDisplayShader.setMatirx4f("project", project);
+        normalDisplayShader.setMatirx3f("toViewNormal", glm::mat3(glm::transpose(glm::inverse(view * model))));
+        myModel.Draw(normalDisplayShader);
 
         //检查并调用事件，交换缓冲
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-    glDeleteProgram(myShader.ID);
+    //glDeleteProgram(myShader.ID);
     glfwTerminate();
     return 0;
 }
