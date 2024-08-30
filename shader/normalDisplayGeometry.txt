@@ -2,20 +2,38 @@
 layout(triangles) in;
 layout(line_strip, max_vertices=6) out;
 
+struct Material{
+    sampler2D diffuse1;
+    sampler2D specular1;
+};
+
+
 in VS_OUT{
     vec3 Normal;
+    vec2 texCoords;
 } gs_in[];
 
-const float MAGNITUDE=0.4;
+out vec4 fColor;
+
+const float border=0.2;
 
 uniform mat4 project;
+uniform Material material;
+
+float random(vec2 st) {
+    return fract(sin(dot(st.xy, vec2(12.9898, 78.233)))* 43758.5453);
+}
 
 void GenerateLine(int index){
     gl_Position=project * gl_in[index].gl_Position;
+    fColor = vec4(0,0,0,1);
     EmitVertex();
     
+    float MAGNITUDE = random(gs_in[index].texCoords)*border;
     gl_Position=project * (gl_in[index].gl_Position+MAGNITUDE*vec4(gs_in[index].Normal, 0));
+    fColor = texture(material.diffuse1, gs_in[index].texCoords);
     EmitVertex();
+
     EndPrimitive();
 }
 
