@@ -3,11 +3,15 @@ in vec2 Texcoord;
 out vec4 FragColor;
 
 uniform sampler2D screenTexture;
+uniform sampler2D bloomBlur;
 uniform float exposure;
+uniform float bloom;
 void main()
 {
     float gamma=2.2;
     vec3 hdrColor = texture(screenTexture, Texcoord).rgb;
+    vec3 bloomColor = texture(bloomBlur, Texcoord).rgb;
+    hdrColor += bloom*bloomColor;
     vec3 mapped = vec3(1.0) - exp(-hdrColor*exposure);
     mapped = pow(mapped, vec3(1.0/gamma));
     FragColor = vec4(mapped,1.0);
