@@ -10,7 +10,7 @@ struct Material{
 };
 
 in vec3 Normal;
-in vec3 worldPos;
+in vec3 viewPos;
 in vec2 Texcoords;
 
 uniform Material material;
@@ -19,7 +19,7 @@ void main()
 {
     vec3 normal=normalize(Normal);
 
-    gPosition = worldPos;
+    gPosition = viewPos;
     gNormal = normal;
     gAlbedoSpec.rgb = texture(material.diffuse1,Texcoords).rgb;
     gAlbedoSpec.a = texture(material.specular1,Texcoords).r;

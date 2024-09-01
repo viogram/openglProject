@@ -1,0 +1,44 @@
+#version 330 core
+in vec2 TexCoords;
+
+out float FragColor;
+
+uniform float screenWidth;
+uniform float screenHeight;
+
+uniform sampler2D gPosition;
+uniform sampler2D gNormal;
+uniform sampler2D noiseTexture;
+
+uniform vec3 samples[64];
+uniform mat4 project;
+
+const float radius = 1.0f;
+
+void main()
+{ 
+    vec2 noiseScale = vec2(screenWidth/4.0, screenHeight/4.0);
+
+    vec3 fragPos = texture(gPosition, TexCoords).rgb;
+    vec3 normal = texture(gNormal, TexCoords).rgb;
+    vec3 randomVec = texture(noiseTexture, noiseScale*TexCoords).rgb;
+ 
+    vec3 tangent = normalize(randomVec - normal*dot(randomVec,normal));
+    vec3 bitangent = cross(normal,tangent);
+    mat3 TBN = mat3(tangent, bitangent, normal);
+    
+    float cnt = 0.0f;
+    for(int i=0;i<64;i++){
+        vec3 sample = TBN*samples[i];
+        sample = fragPos+radius*sample;
+        vec4 screenPos = project*vec4(sample,1.0);
+        screenPos.xyz /= screenPos.w;
+        screenPos.xy = screenPos.xy*0.5+0.5;
+        float depth = texture(gPosition, screenPos.xy).z;
+	float rangeCheck = smoothstep(0.0, 1.0, radius/abs(depth-sample.z));
+        cnt += (depth >= sample.z ? 1.0 : 0.0)*rangeCheck;
+    }
+
+    FragColor = 1.0-(cnt/64);
+}
+
