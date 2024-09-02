@@ -29,7 +29,7 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 const unsigned int TEX_WIDTH = 512; //立方体贴图分辨率
 const unsigned int TEX_HEIGHT = 512;
-
+const int maxMip = 5;
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = (float)SCR_WIDTH / 2.0;
@@ -158,6 +158,7 @@ int main()
         shader.setMatirx4f("view", view);
         shader.setMatirx4f("projection", projection);
         shader.setVec3("camPos", camera.Position);
+        shader.setInt("maxLOD", maxMip-1);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, albedo);
         glActiveTexture(GL_TEXTURE1);
@@ -457,7 +458,6 @@ unsigned int genPrefilterMap(unsigned int envCubemap) {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
     glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
-    int maxMip = 5;
     for (int mip = 0; mip < maxMip; mip++) {
         int mipWidth = 128 * pow(0.5, mip);
         int mipHeight = 128 * pow(0.5, mip);

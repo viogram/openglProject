@@ -8,6 +8,7 @@ out vec4 FragColor;
 uniform vec3 camPos;
 uniform vec3 lightPositions[4];
 uniform vec3 lightColors[4];
+uniform uint maxLOD;
 
 uniform sampler2D albedoMap;
 uniform sampler2D normalMap;
@@ -118,8 +119,13 @@ void main()
     vec3 kD = 1.0 - kS;
     kD *= 1.0 - metallic;	  
     vec3 diffuse = irradiance * albedo;
-    vec3 ambient = (kD * diffuse) * ao;
+    
+    vec3 R = reflect(-V,N);
+    vec3 prefilterColor = textureLod(prefilterMap, R, roughness*maxLOD).rgb;
+    vec2 envBRDF = texture(brdfLUT, vec2(max(dot(N,V),0.0),roughness)).rg;
+    vec3 specular = prefilterColor * (kS*envBRDF.x+envBRDF.y);
 
+    vec3 ambient = (kD * diffuse + specular) * ao;
     vec3 color   = ambient + Lo;
     //hdr to ldr
     color = color/(color+vec3(1.0));
