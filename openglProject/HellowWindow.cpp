@@ -25,7 +25,7 @@ void RenderQuad();
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 const float SCALE = 1;
-int samples = 1;
+const int samples = 1;
 
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 2.0f));
